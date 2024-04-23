@@ -3,7 +3,7 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>F4BC Dashboard</title>
+    <title>J3BA Dashboard</title>
     <link
       rel="icon"
       href="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTm-VwgZfAXVKv_QSQn-AQlX2xtERPCXFd8MZgQiIdxNA&s"
@@ -113,7 +113,7 @@
   </head>
   <body>
     <div class="pattern">
-      <h1 class="heading">F4BC Assessments Dashboard</h1>
+      <h1 class="heading">J3BA Assessments Dashboard</h1>
       <div class="info-container" style="display: gird">
         <div class="info">
           <div class="info__icon">
@@ -130,6 +130,7 @@
               />
             </svg>
           </div>
+          <!-- comment this code after Thursday -->
           <div class="info__title">
             No classes this Thursday. It's a public holiday:)))
           </div>
@@ -176,23 +177,18 @@
       </div>
       <div class="container" id="container" style="display: none"></div>
     </div>
+
     <script>
       document.addEventListener("DOMContentLoaded", async () => {
-        // Show the loader
         document.getElementById("loader").style.display = "block";
-        // Add event listener to info__close svg
         const closeIcon = document.querySelector(".info__close svg");
         const inf2 = document.querySelector(".info-container");
         closeIcon.addEventListener("click", () => {
           inf2.style.display = "none";
         });
         try {
-          // Fetch and display courses
           await fetchAndDisplayCourses();
-
-          // Hide the loader
           document.getElementById("loader").style.display = "none";
-          // Show the container
           document.getElementById("container").style.display = "grid";
         } catch (error) {
           console.error("Error:", error);
@@ -207,15 +203,14 @@
           }
           let courses = await response.json();
 
-          // Filter out courses to exclude
           courses = courses.filter(
             (course) =>
-              course.name !== "Succeed VE 2024" &&
-              course.name !== "Dip of Information Technology (2405)"
+              course.name !== "Dip of Information Technology (2345)" &&
+              course.name !== "How2RMIT"
           );
 
           const container = document.getElementById("container");
-          container.innerHTML = ""; // Clear previous content
+          container.innerHTML = "";
 
           courses.forEach(async (course) => {
             const card = document.createElement("div");
@@ -235,12 +230,11 @@
             );
             filteredAssessments.sort(
               (a, b) => new Date(a.due_at) - new Date(b.due_at)
-            ); // Sort by closest due date
+            );
             filteredAssessments.forEach((assessment) => {
               const listItem = document.createElement("li");
               listItem.textContent = assessment.name;
 
-              // Adding allowed attempts display
               const attemptsInfo = document.createElement("div");
               attemptsInfo.classList.add("attempts-info");
               const attemptsText =
@@ -287,7 +281,6 @@
         const minutes = date.getMinutes();
         const formattedDate = `${day}/${month}/${year} at ${hours}:${minutes}`;
 
-        // Calculate time remaining
         const timeDiff = date.getTime() - new Date().getTime();
         const daysRemaining = Math.ceil(timeDiff / (1000 * 60 * 60 * 24));
         let colorClass = "";
