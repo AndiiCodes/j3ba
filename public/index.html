@@ -1,0 +1,308 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>F4BC Dashboard</title>
+    <link
+      rel="icon"
+      href="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTm-VwgZfAXVKv_QSQn-AQlX2xtERPCXFd8MZgQiIdxNA&s"
+      type="image/x-icon"
+    />
+
+    <style>
+      body {
+        font-family: Arial, sans-serif;
+        background-color: #f4f4f4;
+        margin: 0;
+        padding: 20px;
+      }
+
+      .container {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+        gap: 20px;
+      }
+
+      .card {
+        background-color: #fff;
+        border-radius: 5px;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        overflow: hidden;
+        transition: transform 0.3s ease-in-out;
+      }
+
+      .card:hover {
+        transform: translateY(-5px);
+      }
+
+      .card__title {
+        background-color: #007bff;
+        color: #fff;
+        font-size: 1.2rem;
+        font-weight: bold;
+        margin: 0;
+        padding: 10px;
+        text-align: center;
+      }
+
+      .card__content {
+        list-style-type: none;
+        padding: 0;
+      }
+
+      .card__content li {
+        padding: 10px;
+        border-bottom: 1px solid #ddd;
+      }
+
+      .card__content li:last-child {
+        border-bottom: none;
+      }
+
+      .card__content li:hover {
+        background-color: #f0f0f0;
+      }
+
+      .card__content li::before {
+        content: "\2022";
+        color: #007bff;
+        font-weight: bold;
+        display: inline-block;
+        width: 1em;
+        margin-left: -1em;
+      }
+
+      .due-date {
+        font-size: 0.8rem;
+        margin-top: 5px;
+      }
+
+      .green {
+        color: green;
+      }
+
+      .red {
+        color: red;
+      }
+
+      .orange {
+        color: orange;
+      }
+
+      .heading {
+        margin-bottom: 20px;
+      }
+
+      .legend {
+        margin-top: 20px;
+        font-size: 0.9rem;
+      }
+
+      .legend-item {
+        display: flex;
+        align-items: center;
+        margin-bottom: 5px;
+      }
+
+      .legend-item span {
+        margin-right: 10px;
+      }
+    </style>
+    <link rel="stylesheet" href="loader.css" />
+  </head>
+  <body>
+    <div class="pattern">
+      <h1 class="heading">F4BC Assessments Dashboard</h1>
+      <div class="info-container" style="display: gird">
+        <div class="info">
+          <div class="info__icon">
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              width="24"
+              viewBox="0 0 24 24"
+              height="24"
+              fill="none"
+            >
+              <path
+                fill="#393a37"
+                d="m12 1.5c-5.79844 0-10.5 4.70156-10.5 10.5 0 5.7984 4.70156 10.5 10.5 10.5 5.7984 0 10.5-4.7016 10.5-10.5 0-5.79844-4.7016-10.5-10.5-10.5zm.75 15.5625c0 .1031-.0844.1875-.1875.1875h-1.125c-.1031 0-.1875-.0844-.1875-.1875v-6.375c0-.1031.0844-.1875.1875-.1875h1.125c.1031 0 .1875.0844.1875.1875zm-.75-8.0625c-.2944-.00601-.5747-.12718-.7808-.3375-.206-.21032-.3215-.49305-.3215-.7875s.1155-.57718.3215-.7875c.2061-.21032.4864-.33149.7808-.3375.2944.00601.5747.12718.7808.3375.206.21032.3215.49305.3215.7875s-.1155.57718-.3215.7875c-.2061.21032-.4864.33149-.7808.3375z"
+              />
+            </svg>
+          </div>
+          <div class="info__title">
+            No classes this Thursday. It's a public holiday:)))
+          </div>
+          <div class="info__close">
+            <svg
+              height="20"
+              viewBox="0 0 20 20"
+              width="20"
+              xmlns="http://www.w3.org/2000/svg"
+            >
+              <path
+                d="m15.8333 5.34166-1.175-1.175-4.6583 4.65834-4.65833-4.65834-1.175 1.175 4.65833 4.65834-4.65833 4.6583 1.175 1.175 4.6583-4.6583 4.6583 4.6583 1.175-1.175-4.6583-4.6583z"
+                fill="#393a37"
+              />
+            </svg>
+          </div>
+        </div>
+      </div>
+
+      <div class="legend">
+        <div class="legend-item">
+          <span class="green">&bull;</span> Due date more than 2 weeks away
+        </div>
+        <div class="legend-item">
+          <span class="orange">&bull;</span> Due date within the next 2 weeks
+        </div>
+        <div class="legend-item">
+          <span class="red">&bull;</span> Due date within the next week
+        </div>
+      </div>
+      <div class="spinner-container" id="loader">
+        <div class="spinner">
+          <div></div>
+          <div></div>
+          <div></div>
+          <div></div>
+          <div></div>
+          <div></div>
+          <div></div>
+          <div></div>
+          <div></div>
+          <div></div>
+        </div>
+      </div>
+      <div class="container" id="container" style="display: none"></div>
+    </div>
+    <script>
+      document.addEventListener("DOMContentLoaded", async () => {
+        // Show the loader
+        document.getElementById("loader").style.display = "block";
+        // Add event listener to info__close svg
+        const closeIcon = document.querySelector(".info__close svg");
+        const inf2 = document.querySelector(".info-container");
+        closeIcon.addEventListener("click", () => {
+          inf2.style.display = "none";
+        });
+        try {
+          // Fetch and display courses
+          await fetchAndDisplayCourses();
+
+          // Hide the loader
+          document.getElementById("loader").style.display = "none";
+          // Show the container
+          document.getElementById("container").style.display = "grid";
+        } catch (error) {
+          console.error("Error:", error);
+        }
+      });
+
+      async function fetchAndDisplayCourses() {
+        try {
+          const response = await fetch(
+            "https://canvas-server-production.up.railway.app/api/courses"
+          );
+          if (!response.ok) {
+            throw new Error("Failed to fetch courses");
+          }
+          let courses = await response.json();
+
+          // Filter out courses to exclude
+          courses = courses.filter(
+            (course) =>
+              course.name !== "Succeed VE 2024" &&
+              course.name !== "Dip of Information Technology (2405)"
+          );
+
+          const container = document.getElementById("container");
+          container.innerHTML = ""; // Clear previous content
+
+          courses.forEach(async (course) => {
+            const card = document.createElement("div");
+            card.classList.add("card");
+
+            const title = document.createElement("h3");
+            title.classList.add("card__title");
+            title.textContent = course.name;
+
+            const content = document.createElement("ul");
+            content.classList.add("card__content");
+
+            const assessments = await fetchAssessments(course.id);
+            const currentDate = new Date();
+            const filteredAssessments = assessments.filter(
+              (assessment) => new Date(assessment.due_at) > currentDate
+            );
+            filteredAssessments.sort(
+              (a, b) => new Date(a.due_at) - new Date(b.due_at)
+            ); // Sort by closest due date
+            filteredAssessments.forEach((assessment) => {
+              const listItem = document.createElement("li");
+              listItem.textContent = assessment.name;
+
+              // Adding allowed attempts display
+              const attemptsInfo = document.createElement("div");
+              attemptsInfo.classList.add("attempts-info");
+              const attemptsText =
+                assessment.allowed_attempts > 0
+                  ? `Allowed Attempts: ${assessment.allowed_attempts}`
+                  : "Unlimited Attempts";
+              attemptsInfo.innerHTML = attemptsText;
+              listItem.appendChild(attemptsInfo);
+
+              const dueDate = document.createElement("div");
+              dueDate.classList.add("due-date");
+              dueDate.innerHTML = `Due: ${formatDate(assessment.due_at)}`;
+              listItem.appendChild(dueDate);
+
+              content.appendChild(listItem);
+            });
+
+            card.appendChild(title);
+            card.appendChild(content);
+
+            container.appendChild(card);
+          });
+        } catch (error) {
+          console.error("Fetch error:", error);
+        }
+      }
+
+      async function fetchAssessments(courseId) {
+        const response = await fetch(
+          `https://canvas-server-production.up.railway.app/api/courses/${courseId}/assignments`
+        );
+        if (!response.ok) {
+          throw new Error(`Failed to fetch assessments for course ${courseId}`);
+        }
+        return await response.json();
+      }
+
+      function formatDate(dateString) {
+        const date = new Date(dateString);
+        const day = date.getDate();
+        const month = date.getMonth() + 1;
+        const year = date.getFullYear();
+        const hours = date.getHours();
+        const minutes = date.getMinutes();
+        const formattedDate = `${day}/${month}/${year} at ${hours}:${minutes}`;
+
+        // Calculate time remaining
+        const timeDiff = date.getTime() - new Date().getTime();
+        const daysRemaining = Math.ceil(timeDiff / (1000 * 60 * 60 * 24));
+        let colorClass = "";
+        if (daysRemaining <= 7) {
+          colorClass = "red";
+        } else if (daysRemaining <= 14) {
+          colorClass = "orange";
+        } else {
+          colorClass = "green";
+        }
+
+        return `<span class="${colorClass}">${formattedDate}</span>`;
+      }
+    </script>
+  </body>
+</html>
